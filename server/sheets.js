@@ -6,7 +6,7 @@ const SCOPES = [
   'https://www.googleapis.com/auth/spreadsheets',
   'https://www.googleapis.com/auth/drive',
 ]
-const HEADERS = ['Timestamp', 'Crew Member', 'Scene', 'Take', 'Description', 'Location', 'Date', 'Time', 'Notes']
+const HEADERS = ['Date', 'Time', 'Scene / Shot', 'Take', 'Crew Member', 'Description', 'Location', 'Notes', 'Logged At']
 
 let sheets = null
 let drive = null
@@ -149,15 +149,15 @@ export async function appendRecording(r) {
       insertDataOption: 'INSERT_ROWS',
       requestBody: {
         values: [[
-          new Date(r.created_at).toISOString(),
-          r.crew_member,
-          r.scene,
-          r.take,
-          r.description,
-          r.location ?? '',
           r.date,
           r.time,
+          r.scene,
+          r.take,
+          r.crew_member,
+          r.description,
+          r.location ?? '',
           r.notes ?? '',
+          new Date(r.created_at).toISOString(),
         ]],
       },
     })
