@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { createDatabase } from './db.js'
+import { initSheets, appendRecording } from './sheets.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
@@ -14,6 +15,7 @@ app.use(cors())
 app.use(express.json())
 
 const db = createDatabase()
+initSheets()
 
 // GET /api/recordings
 app.get('/api/recordings', (req, res) => {
@@ -81,7 +83,9 @@ app.post('/api/recordings', (req, res) => {
       created_at,
     )
 
-    res.status(201).json(db.prepare('SELECT * FROM recordings WHERE id = ?').get(id))
+    const saved = db.prepare('SELECT * FROM recordings WHERE id = ?').get(id)
+    appendRecording(saved)
+    res.status(201).json(saved)
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: 'Failed to create recording' })
